@@ -40,7 +40,7 @@ public class TestHogwarts {
 	
 	@Test
 	public void queMePermitaInscribirUnAlumno() {
-				
+		
 	}
 	
 	@Test
@@ -50,7 +50,7 @@ public class TestHogwarts {
 	
 	@Test
 	public void queMePermitaInscribirUnProfesor() {
-		
+	
 	}
 	
 	@Test
@@ -79,15 +79,14 @@ public class TestHogwarts {
 	}
 	
 	@Test
-	public void queMePermitaObtenerElPromedioDeDiasSancionados()  {
+	public void queMePermitaObtenerElPromedioDeDiasSancionados() {
 		
 	}
 
-	@Test 
+	@Test
 	public void queNoMePermitaAplicarleSancionAUnAlumnoConCodigoInexistente() {
 		
-		}
-
+	}
 	
 	@Test
 	public void quePermitaMostrarLosPuntosQueTieneUnAlumnoSancionado() {
@@ -116,22 +115,86 @@ public class TestHogwarts {
 	
 	@Test
 	public void seOrdenanLosProfesoresPorCodigoAscendenteYPorApellido() {
+		Mago profesor2 = new Profesor("P-2","remus", "lupin");
+		Mago profesor3 = new Profesor("P-4", "minerva", "mcgonagall");
+		Mago profesor4 = new Profesor("P-3", "alastor", "moody");
+
+		hogwarts.inscribirMago(profesor1);
+		hogwarts.inscribirMago(profesor2);
+		hogwarts.inscribirMago(profesor3);
+		hogwarts.inscribirMago(profesor4);
 		
+		TreeSet<Profesor> profesoresOrdenadosPorCodigo = hogwarts.seOrdenanLosProfesoresPorCodigoAscendente();
+		
+		assertEquals(profesor1.getCodigo(), profesoresOrdenadosPorCodigo.getFirst().getCodigo());
+		assertEquals(profesor3.getCodigo(), profesoresOrdenadosPorCodigo.getLast().getCodigo());
 	}
 
 	@Test
 	public void seOrdenanLosAlumnosPorPuntosDescendenteYPorCasaAscendente() {
+		Mago alumno2 = new Alumno("A-2", "luna", "lovegood", Personalidad.INGENIOSO, 110);
+		Mago alumno3 = new Alumno("A-3", "cedric", "diggory", Personalidad.AMABLE, 110);
+		Mago alumno4 = new Alumno("A-4", "draco", "malfoy", Personalidad.PROBLEMATICO, 30);
 		
+		hogwarts.inscribirMago(alumno1);
+		hogwarts.inscribirMago(alumno2);
+		hogwarts.inscribirMago(alumno3);
+		hogwarts.inscribirMago(alumno4);
+		
+		TreeSet<Alumno> alumnosOrdenadosPorCasas = hogwarts.seOrdenanLosAlumnosPorPuntosDescendenteYPorCasaAscendente();
+		
+		assertEquals(((Alumno)alumno3).getPuntos(), alumnosOrdenadosPorCasas.getFirst().getPuntos());
+		assertEquals(((Alumno)alumno3).getCasa(), alumnosOrdenadosPorCasas.getFirst().getCasa());
+		assertEquals(((Alumno)alumno4).getPuntos(), alumnosOrdenadosPorCasas.getLast().getPuntos());
+		assertEquals(((Alumno)alumno4).getCasa(), alumnosOrdenadosPorCasas.getLast().getCasa());
 	}
 	
 	@Test
 	public void quePermitaObtenerUnReporteConTodosLosMagosPorCodigoYApellido() {
+		hogwarts.inscribirMago(alumno1);
+		hogwarts.inscribirMago(profesor1);
 		
+		Map<String, String> reporteMagos = hogwarts.obtenerReporteTodosLosMagos();
+		
+		for(Map.Entry<String, String> entry : reporteMagos.entrySet()) {
+			String key = entry.getKey();
+			String val = entry.getValue();
+			
+			switch(key) {
+			case "A-1":
+				assertEquals(alumno1.getApellido(), val);
+				break;
+			case "P-1":
+				assertEquals(profesor1.getApellido(), val);
+				break;
+				
+			}
+		}
 	}
 	
 	@Test
-	public void seDeterminaLaCasaGanadoraAlTerminarElAño() {
+	public void seDeterminaLaCasaGanadoraAlTerminarElAño() throws MagoEncontradoPeroEsProfesorException {
+		Mago alumno2 = new Alumno("A-2", "luna", "lovegood", Personalidad.INGENIOSO, 120);
+		Mago alumno3 = new Alumno("A-3", "lourdes", "godoy lotta", Personalidad.AMABLE, 110);
+		Mago alumno4 = new Alumno("A-4", "draco", "malfoy", Personalidad.PROBLEMATICO, 30);
 		
+		hogwarts.inscribirMago(alumno1);
+		hogwarts.inscribirMago(alumno2);
+		hogwarts.inscribirMago(alumno3);
+		hogwarts.inscribirMago(alumno4);
+		
+		hogwarts.alumnoDaExamen(alumno1.getCodigo(), Examen.APRUEBA);
+		
+		hogwarts.alumnoDaExamen(alumno2.getCodigo(), Examen.APRUEBA);
+		
+		hogwarts.alumnoDaExamen(alumno3.getCodigo(), Examen.APRUEBA);
+		hogwarts.alumnoDaExamen(alumno3.getCodigo(), Examen.APRUEBA);
+		hogwarts.alumnoDaExamen(alumno3.getCodigo(), Examen.APRUEBA);
+		
+		hogwarts.alumnoDaExamen(alumno4.getCodigo(), Examen.APRUEBA);
+		hogwarts.alumnoDaExamen(alumno4.getCodigo(), Examen.DESAPRUEBA);
+
+		assertEquals(((Alumno)alumno3).getCasa(), hogwarts.determinarCasaGanadora());
 	}
 
 }
