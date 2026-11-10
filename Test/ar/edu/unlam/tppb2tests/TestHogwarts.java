@@ -118,28 +118,49 @@ public class TestHogwarts {
 
 	
 	@Test
-	public void quePermitaMostrarLosPuntosQueTieneUnAlumnoSancionado() {
+	public void quePermitaMostrarLosPuntosQueTieneUnAlumnoSancionado() throws MagoNoEncontradoException, SancionInvalidaException, MagoEncontradoPeroEsProfesorException {
+		hogwarts.inscribirMago(alumno2);
+		hogwarts.aplicarSancion("A-2", 5);
 		
+		assertEquals(10, ((Alumno)alumno2).getPuntos(), 0);
 	}
 	
 	@Test
 	public void queNoPermitaAplicarleSancionAOtroMagoQueNoSeaAlumno() {
+		hogwarts.inscribirMago(profesor1);
 		
+		try {
+			hogwarts.aplicarSancion("P-1", 3);
+			fail("Debió lanzar MagoEncontradoPeroEsProfesorException");
+		}catch(MagoEncontradoPeroEsProfesorException e) {
+			assertEquals("Se encontró al mago pero al ser profesor no se puede aplicarle sanción", e.getMessage());			
+		}catch(MagoNoEncontradoException e) {
+			fail("No debía lanzar esta excepción");
+		}catch(SancionInvalidaException e) {
+			fail("No debía lanzar esta excepción");
+		}
 	}
 	
 	@Test
-	public void unAlumnoDaUnaEvaluacionQueEsteAprobada() {
+	public void unAlumnoDaUnaEvaluacionQueEsteAprobada() throws MagoEncontradoPeroEsProfesorException {
+		hogwarts.inscribirMago(alumno1);
+		hogwarts.alumnoDaExamen("A-1", Examen.APRUEBA);
 		
+		assertEquals(110, ((Alumno)alumno1).getPuntos(), 0);
 	}
 	
 	@Test
-	public void unAlumnoDaUnaEvaluacionQueEsteDesaprobada() {
+	public void unAlumnoDaUnaEvaluacionQueEsteDesaprobada() throws MagoEncontradoPeroEsProfesorException {
+		hogwarts.inscribirMago(alumno1);
+		hogwarts.alumnoDaExamen("A-1", Examen.DESAPRUEBA);
 		
+		assertEquals(100, ((Alumno)alumno1).getPuntos(), 0);
 	}
 	
-	@Test
-	public void noPermiteQueUnProfesorDeUnExamen() {
-		
+	@Test(expected= MagoEncontradoPeroEsProfesorException.class)
+	public void noPermiteQueUnProfesorDeUnExamen() throws MagoEncontradoPeroEsProfesorException {
+		hogwarts.inscribirMago(profesor1);
+		hogwarts.alumnoDaExamen("P-1", Examen.APRUEBA);
 	}
 	
 	@Test
