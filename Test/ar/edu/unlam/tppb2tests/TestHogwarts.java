@@ -40,27 +40,38 @@ public class TestHogwarts {
 	
 	@Test
 	public void queMePermitaInscribirUnAlumno() {
-		
+		hogwarts.inscribirMago(alumno1);
+		assertEquals(1, hogwarts.getMagos().size());
 	}
 	
-	@Test
+	@Test(expected = MagoDuplicadoException.class)
 	public void queNoMePermitaInscribirAUnAlumnoConElMismoID() {
+		hogwarts.inscribirMago(alumno1);
+
+		Mago alumno3 = new Alumno("A-1", "hermione", "granger", Personalidad.VALIENTE, 20);
 		
+		hogwarts.inscribirMago(alumno3);
 	}
 	
 	@Test
 	public void queMePermitaInscribirUnProfesor() {
-	
+		hogwarts.inscribirMago(profesor1);
+		
+		assertTrue(hogwarts.getMagos().contains(profesor1));
+		assertEquals(1, hogwarts.getMagos().size());
 	}
 	
-	@Test
+	@Test(expected = MagoDuplicadoException.class)
 	public void queNoMePermitaInscribirAUnProfesorConElMismoIDYLanceProfesorDuplicadoException() {
+		hogwarts.inscribirMago(profesor1);
 		
+		Mago profesor2 = new Profesor("P-1", "remus", "lupin");
+		hogwarts.inscribirMago(profesor2);
 	}
 	
 	@Test
 	public void quePermitaMostrarLosPuntosQueTieneUnAlumno() {
-		
+		assertEquals(100, ((Alumno)alumno1).getPuntos(), 0);
 	}
 	
 	@Test
